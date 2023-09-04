@@ -16,12 +16,22 @@ Data::Data(int val) {
 float Total(float); // function for finding total permutations, 25 too big to be represented using int, so used float
 void get_Set(ostream&, vector<Data>); // prints the passed in permutation
 int findLargestMobile(vector<Data>&); // finds largest mobile element k
-void Johnson_Trotter(vector<Data>&, vector<vector<Data>>&);    // follows Johnson-Trotter algo to manipulate given vector, adds to list of permutations
+void Johnson_Trotter(vector<Data>&, vector<vector<Data> >&);    // follows Johnson-Trotter algo to manipulate given vector, adds to list of permutations
 
 int main() {
-  float size = 3; // use numbers 1 to size
+  int x = 0;
+  // get user input for size
+  cout << "Enter a positive integer between 1 and 25: " << endl;
+  cin >> x;
+  while (x < 1 || x > 25) {
+    cout << "Input is not within the range of 1-25." << endl;
+    cin >> x;
+  }
+
+  float size = x; // use numbers 1 to size
+
   vector<Data>Numbers;
-  vector<vector<Data>>Permutations;
+  vector<vector<Data> >Permutations;
 
   for (int i = 1; i <= size; i++) { // initializes initial permutation
     Numbers.push_back(Data(i));
@@ -31,7 +41,7 @@ int main() {
   get_Set(cout, Numbers);
   cout << ":\n";
   Johnson_Trotter(Numbers, Permutations);
-  
+
   return 0;
 }
 
@@ -56,13 +66,13 @@ int findLargestMobile(vector<Data>& Numbers) {
   int largest = -1;        // if -1 returned, found all permutations
   int index = 1;          // start search at index 1 since special rule for index 0
   int next = index + 1;   // next points to element after index, when next is == size, we know index points to final element. Final element has special rules so need to do seperate from while loop
-  
+
   if (!Numbers[0].direction) { // first element points right, compare with next element. If points left, can't be mobile
     if (Numbers[0].value > Numbers[index].value) {
       largest = 0;
     }
   }
-  
+
   while (next != Numbers.size()) {
     if (Numbers[index].direction) {     // current element points left
       if (Numbers[index].value > Numbers[index - 1].value) {
@@ -88,27 +98,37 @@ int findLargestMobile(vector<Data>& Numbers) {
 void Johnson_Trotter(vector<Data>& Numbers, vector<vector<Data>>& Permutations) {
   get_Set(cout, Numbers);
   cout << "\n";
+  
   if (Numbers.size() == 1) { // single element contained in Numbers, all permutations just single element
     return;
   }
-  int indexOfLargestMobile = 0;
-  int valueOfLargestMobile = 0;
+
   while (true) {
-    indexOfLargestMobile = findLargestMobile(Numbers);    // find largest mobile element
-    cout << indexOfLargestMobile << endl;
+    int indexOfLargestMobile = findLargestMobile(Numbers);    // find largest mobile element
 
     if (indexOfLargestMobile == -1) {                     // if return -1, found all permutations
       return;
     }
-    valueOfLargestMobile = Numbers[indexOfLargestMobile].value; // store the value contained in the largest mobile element
-    Data temp = Numbers[indexOfLargestMobile];                  // have to swap largest mobile element and what its pointing to, temp stores one of the objects while swapping
 
-    // logic to manipulate Largest Mobile Element from algorithm goes here
-    // as well as logic to reverse direction of values less that the largest mobile element
-    
+    int valueOfLargestMobile = Numbers[indexOfLargestMobile].value;      // Store the value of the largest mobile element
+    bool directionOfLargestMobile = Numbers[indexOfLargestMobile].direction;     // Store the direction of the largest mobile element
+
+      // Swap the largest mobile element with the adjacent element
+    if (directionOfLargestMobile) { // Pointing left
+      swap(Numbers[indexOfLargestMobile], Numbers[indexOfLargestMobile - 1]);
+    }
+    else { // Pointing right
+      swap(Numbers[indexOfLargestMobile], Numbers[indexOfLargestMobile + 1]);
+    }
+
+    // Update the directions of elements smaller than the largest mobile element
+    for (int i = 0; i < Numbers.size(); ++i) {
+      if (Numbers[i].value > valueOfLargestMobile) {
+        Numbers[i].direction = !Numbers[i].direction; // Reverse direction
+      }
+    }
     Permutations.push_back(Numbers);
     get_Set(cout, Numbers);
     cout << "\n";
   }
-  return;
 }
