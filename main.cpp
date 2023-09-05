@@ -42,7 +42,7 @@ int main() {
   get_Set(cout, Numbers);
   cout << ":\n";
   Johnson_Trotter(Numbers, Permutations);
-  cout << Permutations.size() << endl;
+  cout << "\nPermutations Stored: " << Permutations.size() << endl;
   return 0;
 }
 
@@ -65,32 +65,44 @@ void get_Set(ostream& out, vector<Data> Numbers) {
 
 int findLargestMobile(vector<Data>& Numbers) {
   int largest = -1;        // if -1 returned, found all permutations
+  int valueOfLargest = 0;
   int index = 1;          // start search at index 1 since special rule for index 0
   int next = index + 1;   // next points to element after index, when next is == size, we know index points to final element. Final element has special rules so need to do seperate from while loop
 
   if (!Numbers[0].direction) { // first element points right, compare with next element. If points left, can't be mobile
     if (Numbers[0].value > Numbers[index].value) {
       largest = 0;
+      valueOfLargest = Numbers[largest].value;
     }
   }
 
   while (next != Numbers.size()) {
     if (Numbers[index].direction) {     // current element points left
       if (Numbers[index].value > Numbers[index - 1].value) {
-        largest = index;
+        if (Numbers[index].value > valueOfLargest) {
+          largest = index;
+          valueOfLargest = Numbers[largest].value;
+        }
       }
     }
     else {                              // current element points right
       if (Numbers[index].value > Numbers[next].value) {
-        largest = index;
+        if (Numbers[index].value > valueOfLargest) {
+          largest = index;
+          valueOfLargest = Numbers[largest].value;
+        }
       }
     }
     index++;
     next++;
   }
+
   if (Numbers[index].direction) {    // last element points left, compare with prev element. If points right, can't be mobile
     if (Numbers[index].value > Numbers[index - 1].value) {
-      largest = index;
+      if (Numbers[index].value > valueOfLargest) {
+        largest = index;
+        valueOfLargest = Numbers[largest].value;
+      }
     }
   }
   return largest;
@@ -100,24 +112,16 @@ void Johnson_Trotter(vector<Data>& Numbers, vector<vector<Data>>& Permutations) 
   get_Set(cout, Numbers);
   Permutations.push_back(Numbers);
   cout << "\n";
-  
+
   if (Numbers.size() == 1) { // single element contained in Numbers, all permutations just single element
     return;
   }
-  
+
   int indexOfLargestMobile = 0;
   int valueOfLargestMobile = 0;
   bool directionOfLargestMobile = true;
   while (true) {
     indexOfLargestMobile = findLargestMobile(Numbers);    // find largest mobile element
-
-    /*
-    for (int i = 0; i < Numbers.size(); i++) {
-      cout << Numbers[i].direction << " ";
-    }
-    
-    cout << "LARGEST INDEX: " << indexOfLargestMobile << endl;
-    */
 
     if (indexOfLargestMobile == -1) {                     // if return -1, found all permutations
       return;
@@ -134,9 +138,7 @@ void Johnson_Trotter(vector<Data>& Numbers, vector<vector<Data>>& Permutations) 
       swap(Numbers[indexOfLargestMobile], Numbers[indexOfLargestMobile + 1]);
     }
 
-    // Update the directions of elements smaller than the largest mobile element
-    // somewhere in here messing up
-    // EX: For a size of 4, 1 2 4 3 --> 1 4 2 3 wrongly swaps direction of 4 before it reaches the end.
+    // Update the directions of elements larger than the largest mobile element
     for (int i = 0; i < Numbers.size(); i++) {
       if (Numbers[i].value > valueOfLargestMobile) {
         Numbers[i].direction = !Numbers[i].direction; // Reverse direction
