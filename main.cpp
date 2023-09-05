@@ -19,6 +19,7 @@ int findLargestMobile(vector<Data>&); // finds largest mobile element k
 void Johnson_Trotter(vector<Data>&, vector<vector<Data> >&);    // follows Johnson-Trotter algo to manipulate given vector, adds to list of permutations
 
 int main() {
+  cout << "1 = <--    0 = -->" << endl;
   int x = 0;
   // get user input for size
   cout << "Enter a positive integer between 1 and 25: " << endl;
@@ -31,7 +32,7 @@ int main() {
   float size = x; // use numbers 1 to size
 
   vector<Data>Numbers;
-  vector<vector<Data> >Permutations;
+  vector<vector<Data>> Permutations;
 
   for (int i = 1; i <= size; i++) { // initializes initial permutation
     Numbers.push_back(Data(i));
@@ -41,7 +42,7 @@ int main() {
   get_Set(cout, Numbers);
   cout << ":\n";
   Johnson_Trotter(Numbers, Permutations);
-
+  cout << Permutations.size() << endl;
   return 0;
 }
 
@@ -97,21 +98,33 @@ int findLargestMobile(vector<Data>& Numbers) {
 
 void Johnson_Trotter(vector<Data>& Numbers, vector<vector<Data>>& Permutations) {
   get_Set(cout, Numbers);
+  Permutations.push_back(Numbers);
   cout << "\n";
   
   if (Numbers.size() == 1) { // single element contained in Numbers, all permutations just single element
     return;
   }
-
+  
+  int indexOfLargestMobile = 0;
+  int valueOfLargestMobile = 0;
+  bool directionOfLargestMobile = true;
   while (true) {
-    int indexOfLargestMobile = findLargestMobile(Numbers);    // find largest mobile element
+    indexOfLargestMobile = findLargestMobile(Numbers);    // find largest mobile element
+
+    /*
+    for (int i = 0; i < Numbers.size(); i++) {
+      cout << Numbers[i].direction << " ";
+    }
+    
+    cout << "LARGEST INDEX: " << indexOfLargestMobile << endl;
+    */
 
     if (indexOfLargestMobile == -1) {                     // if return -1, found all permutations
       return;
     }
 
-    int valueOfLargestMobile = Numbers[indexOfLargestMobile].value;      // Store the value of the largest mobile element
-    bool directionOfLargestMobile = Numbers[indexOfLargestMobile].direction;     // Store the direction of the largest mobile element
+    valueOfLargestMobile = Numbers[indexOfLargestMobile].value;      // Store the value of the largest mobile element
+    directionOfLargestMobile = Numbers[indexOfLargestMobile].direction;     // Store the direction of the largest mobile element
 
       // Swap the largest mobile element with the adjacent element
     if (directionOfLargestMobile) { // Pointing left
@@ -122,7 +135,9 @@ void Johnson_Trotter(vector<Data>& Numbers, vector<vector<Data>>& Permutations) 
     }
 
     // Update the directions of elements smaller than the largest mobile element
-    for (int i = 0; i < Numbers.size(); ++i) {
+    // somewhere in here messing up
+    // EX: For a size of 4, 1 2 4 3 --> 1 4 2 3 wrongly swaps direction of 4 before it reaches the end.
+    for (int i = 0; i < Numbers.size(); i++) {
       if (Numbers[i].value > valueOfLargestMobile) {
         Numbers[i].direction = !Numbers[i].direction; // Reverse direction
       }
