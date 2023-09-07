@@ -1,4 +1,18 @@
+
+/***************************************************************************************
+*    Title: C++ Plus Data Structures SIXTH EDITION
+*    Author: Nell Dale, Chip Weems
+*    Date: 08/30/2023
+*    Code version: C++11
+*    Availability: Pages 138-139
+*
+***************************************************************************************/
+
+/*
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <cstring> // stof
 #include <vector>
 
 using namespace std;
@@ -18,32 +32,60 @@ void get_Set(ostream&, vector<Data>); // prints the passed in permutation
 int findLargestMobile(vector<Data>&); // finds largest mobile element k
 void Johnson_Trotter(vector<Data>&, vector<vector<Data> >&);    // follows Johnson-Trotter algo to manipulate given vector, adds to list of permutations
 
-int main() {
-  int x = 0;
-  // get user input for size
-  cout << "Enter a positive integer between 1 and 25: " << endl;
-  cin >> x;
-  while (x < 1 || x > 25) {
-    cout << "Input is not within the range of 1-25." << endl;
-    cin >> x;
-  }
-
-  float size = x; // use numbers 1 to size
-
+int main()
+{
+  ifstream inFile;     // file containing operations
+  ofstream outFile;    // file containing output
+  string inFileName;   // input file external name
+  string outFileName;  // output file external name
+  string outputLabel;
+  string command;    // # to use for size
+  int numCommands;
+  float size = 0; // use numbers 1 to size
   vector<Data>Numbers;
   vector<vector<Data>> Permutations;
+  
+  // input file
+  inFile.open("Test.txt");
 
-  for (int i = 1; i <= size; i++) { // initializes initial permutation
-    Numbers.push_back(Data(i));
+  // output file
+  outFile.open("Results.txt");
+
+  cout << "Enter name of test run; press return." << endl;
+  cin >> outputLabel;
+  outFile << outputLabel << endl;
+
+  inFile >> command;
+  numCommands = 0;
+  while (command != "Quit") {
+    if (isdigit(command[0])) {
+      size = stof(command,NULL);
+      if (size > 0 && size <= 25) {
+        for (int i = 1; i <= size; i++) { // initializes initial permutation
+          Numbers.push_back(Data(i));
+        }
+        outFile << "There are " << Total(size) << " Permutations of the set ";
+        get_Set(outFile, Numbers);
+        Johnson_Trotter(Numbers, Permutations);
+        outFile << "\nPermutations Stored: " << Permutations.size() << endl;
+        Permutations.clear();
+        Numbers.clear();
+      }
+    }
+    else {
+      outFile << command << " IS AN INVALID NUMBER/COMMAND" << endl;
+    }
+    numCommands++;
+    cout << "Command number " << numCommands << " completed."
+      << endl;
+    inFile >> command;
   }
-
-  cout << "There are " << Total(size) << " Permutations of the set ";
-  get_Set(cout, Numbers);
-  cout << ":\n";
-  Johnson_Trotter(Numbers, Permutations);
-  cout << "\nPermutations Stored: " << Permutations.size() << endl;
+  cout << "Testing completed." << endl;
+  inFile.close();
+  outFile.close();
   return 0;
 }
+
 
 float Total(float size) {
   float Permutations = 1;
@@ -108,9 +150,7 @@ int findLargestMobile(vector<Data>& Numbers) {
 }
 
 void Johnson_Trotter(vector<Data>& Numbers, vector<vector<Data>>& Permutations) {
-  get_Set(cout, Numbers);
   Permutations.push_back(Numbers);
-  cout << "\n";
 
   if (Numbers.size() == 1) { // single element contained in Numbers, all permutations just single element
     return;
@@ -144,7 +184,6 @@ void Johnson_Trotter(vector<Data>& Numbers, vector<vector<Data>>& Permutations) 
       }
     }
     Permutations.push_back(Numbers);
-    get_Set(cout, Numbers);
-    cout << "\n";
   }
 }
+*/
